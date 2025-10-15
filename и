@@ -1,0 +1,37 @@
+const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Ботро оғоз кун
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token, { polling: true });
+
+// Барои нигоҳ доштани сервер фаъол
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'Bot is running!', 
+    time: new Date().toISOString(),
+    message: 'Telegram Bot is active'
+  });
+});
+
+// Фаъолияти бот
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, 'Салом! Бот кор мекунад ✅\nМан дар Railway кор мекунам!');
+});
+
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  if (msg.text && !msg.text.startsWith('/')) {
+    bot.sendMessage(chatId, `Шумо навиштед: "${msg.text}"`);
+  }
+});
+
+// Серверро оғоз кун
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Bot server running on port ${PORT}`);
+  console.log(`✅ Telegram Bot is active and listening...`);
+});
